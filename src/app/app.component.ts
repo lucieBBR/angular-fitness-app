@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from './material.module';
 
@@ -11,4 +11,8 @@ import { MaterialModule } from './material.module';
 })
 export class AppComponent {
   title = 'angular-fitness-app';
+  openSidenav = false;
+
+ // @ViewChild('sidenav')
+
 }
