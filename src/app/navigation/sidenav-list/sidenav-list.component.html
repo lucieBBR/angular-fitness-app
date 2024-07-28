@@ -1,1 +1,18 @@
-<p>sidenav-list works!</p>
+<mat-nav-list>
+    <mat-list-item routerLink="/signup" (click)="onClose()">
+      <mat-icon>face</mat-icon>
+      <span class="nav-caption">Signup</span>
+    </mat-list-item>
+    <mat-list-item routerLink="/login" (click)="onClose()">
+      <mat-icon>login</mat-icon>
+      <span class="nav-caption">Login</span>
+    </mat-list-item>
+    <mat-list-item routerLink="/training" (click)="onClose()">
+      <mat-icon>fitness_center</mat-icon>
+      <span class="nav-caption">Training</span>
+    </mat-list-item>
+    <mat-list-item (click)="onClose()">
+      <mat-icon>power_settings_new</mat-icon>
+      <span class="nav-caption">Logout</span>
+    </mat-list-item>
+  </mat-nav-list>
