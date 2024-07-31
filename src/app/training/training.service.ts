@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
 import { Exercise } from "./exercise.model";
-import { Firestore, collectionSnapshots, collection, addDoc } from '@angular/fire/firestore';
+import { Firestore, collectionSnapshots, collection, collectionData, addDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { inject } from "@angular/core";
@@ -8,10 +8,10 @@ import { inject } from "@angular/core";
 export class TrainingService {
     exerciseChanged = new Subject<Exercise>();
     exercisesChanged = new Subject<Exercise[]>();
+    finishedExercisesChanged = new Subject<Exercise[]>();
     firestore: Firestore = inject(Firestore);
     private availableExercises: Exercise[] = []
     private runningExercise: Exercise;
-    private exercises: Exercise[] = [];
 
     fetchAvailableExercises() {
         const exerciseCollection = collection(this.firestore, 'availableExercises');
@@ -64,8 +64,11 @@ export class TrainingService {
         return {...this.runningExercise};
     }
 
-    getCompletedOrCancelledExercises() {
-        return this.exercises.slice();
+    fetchCompletedOrCancelledExercises() {
+        const finishedExercises = collection(this.firestore, 'finishedExercises')
+        collectionData(finishedExercises).subscribe((exercises: Exercise[]) => {
+            this.finishedExercisesChanged.next(exercises);
+        })
     }
 
     private addDataToDatabase(exercise: Exercise) {
