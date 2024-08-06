@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
 import { Exercise } from "./exercise.model";
-import { Firestore, collectionSnapshots, collection, collectionData, addDoc } from '@angular/fire/firestore';
+import { Firestore, collectionSnapshots, collection, collectionData, addDoc, doc, updateDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { inject } from "@angular/core";
@@ -33,6 +33,8 @@ export class TrainingService {
     }
 
     startExercise(selectedId: string) {
+        const exerciseDocRef = doc(this.firestore, 'availableExercises', selectedId);
+        updateDoc(exerciseDocRef, { lastSelected: new Date() })
         this.runningExercise = this.availableExercises.find(ex => ex.id === selectedId);
         console.log('running exercise', this.runningExercise)
         this.exerciseChanged.next({...this.runningExercise})
