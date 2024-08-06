@@ -9,6 +9,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { environment } from 'src/environments/environment';
+import { UIService } from './shared/ui.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,5 +20,6 @@ export const appConfig: ApplicationConfig = {
     provideAuth(() => getAuth()),
     AuthService,
     AuthGuard,
-    TrainingService]
+    TrainingService,
+    UIService]
 };
