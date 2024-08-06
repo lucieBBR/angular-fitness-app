@@ -43,3 +43,9 @@ Thumbs.db
 
 #environments
 /src/environments/environment.ts
+
+#practice files
+/src/app/home.component.ts
+/src/app/products.component.ts
+/src/app/products.component.html
+/src/app/products.service.ts
