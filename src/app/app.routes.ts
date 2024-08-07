@@ -13,5 +13,29 @@ export const routes: Routes = [
   { path: '', component: WelcomeComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'training', component: TrainingComponent, canActivate: [AuthGuard] }
+  { 
+    path: 'training', 
+  //  canActivate: [AuthGuard],
+    canLoad: [AuthGuard],
+    loadComponent: () => import('./training/training.component').then(m => m.TrainingComponent),
+    children: [
+      {
+        path: 'past', 
+        loadComponent: () => import('./training/past-trainings/past-trainings.component').then(m => m.PastTrainingsComponent)
+      },
+      {
+        path: 'new', 
+        loadComponent: () => import('./training/new-training/new-training.component').then(m => m.NewTrainingComponent)
+      },
+      {
+        path: 'current', 
+        loadComponent: () => import('./training/current-training/current-training.component').then(m => m.CurrentTrainingComponent)
+      },
+      { 
+        path: '', 
+        redirectTo: 'new', 
+        pathMatch: 'full' 
+      }
+    ]
+  }
 ];
