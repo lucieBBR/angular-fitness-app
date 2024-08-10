@@ -33,14 +33,15 @@
             <mat-hint>Please enter your password.</mat-hint>
             <mat-error>Missing password.</mat-error>
         </mat-form-field> 
-       @if(!isLoading) {
+       @if(!isLoading$ | async ) {
             <button 
                 type="submit" 
                 mat-raised-button 
                 color="primary" 
                 [disabled]="!loginForm.valid">
             Submit</button>
-       } @else {
+       } 
+       @if(isLoading$ | async) {
             <mat-spinner></mat-spinner>
        }   
     </form>
