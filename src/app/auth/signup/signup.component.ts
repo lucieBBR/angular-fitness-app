@@ -1,29 +1,37 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MaterialModule } from '../../material.module';
 import { FormsModule, NgForm } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { UIService } from 'src/app/shared/ui.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { OnInit, OnDestroy } from '@angular/core';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../app.reducer';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [MaterialModule, FormsModule],
+  imports: [CommonModule, MaterialModule, FormsModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
 })
-export class SignupComponent implements OnInit, OnDestroy {
+export class SignupComponent implements OnInit {
   maxDate;
-  isLoading = false;
+  isLoading$: Observable<boolean>;
   private loadingSubs: Subscription;
+  
 
-  constructor(private authService: AuthService, private uiService: UIService) {}
+  constructor(
+    private authService: AuthService, 
+    private uiService: UIService,
+    private store: Store<{ui: fromRoot.State}>) {}
 
   ngOnInit() {
-    this.loadingSubs = this.uiService.loadingStateChanged.subscribe(isLoading =>
-      this.isLoading = isLoading
-    )
+    this.isLoading$ = this.store.select(fromRoot.getIsLoading)
+    // this.loadingSubs = this.uiService.loadingStateChanged.subscribe(isLoading =>
+    //   this.isLoading = isLoading
+    // )
     this.maxDate = new Date();
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
@@ -35,7 +43,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    this.loadingSubs?.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   this.loadingSubs?.unsubscribe();
+  // }
 }
