@@ -3,9 +3,11 @@ import { MaterialModule } from '../../material.module';
 import { TrainingService } from '../training.service';
 import { Exercise } from '../exercise.model';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { UIService } from 'src/app/shared/ui.service';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../app.reducer';
 
 @Component({
   selector: 'app-new-training',
@@ -14,21 +16,23 @@ import { UIService } from 'src/app/shared/ui.service';
   templateUrl: './new-training.component.html',
   styleUrl: './new-training.component.css'
 })
-export class NewTrainingComponent implements OnInit, OnDestroy {
+export class NewTrainingComponent implements OnInit {
   exercises: Exercise[];
   private exerciseSubscription: Subscription;
-  isLoading = true;
+  isLoading$: Observable<boolean>;
   private loadingSubs: Subscription;
   
   constructor(
     private trainingService: TrainingService,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<{ui: fromRoot.State}>
     ) {}
 
   ngOnInit(): void {
-    this.loadingSubs = this.uiService.loadingStateChanged.subscribe(isLoading => {
-      this.isLoading = isLoading;
-    });
+    this.isLoading$ = this.store.select(fromRoot.getIsLoading)
+    // this.loadingSubs = this.uiService.loadingStateChanged.subscribe(isLoading => {
+    //   this.isLoading = isLoading;
+    // });
     this.exerciseSubscription = this.trainingService.exercisesChanged.subscribe(exercises =>
       this.exercises = exercises);
     this.fetchExercises();
@@ -42,8 +46,8 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
       this.trainingService.startExercise(form.value.exercise)
   };
 
-  ngOnDestroy() {
-    this.exerciseSubscription?.unsubscribe();
-    this.loadingSubs?.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   this.exerciseSubscription?.unsubscribe();
+  //   this.loadingSubs?.unsubscribe();
+  // }
 }

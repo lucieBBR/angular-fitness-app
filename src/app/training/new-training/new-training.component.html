@@ -3,7 +3,7 @@
     <mat-card fxFlex.xs="100%" fxFlex="400px">
         <mat-card-title fxLayoutAlign="center">Time to start a workout!</mat-card-title>
             <mat-card-content fxLayoutAlign="center">
-              @if (!isLoading && exercises) {
+              @if (!(isLoading$ | async ) && exercises) {
                 <mat-form-field>
                     <mat-label>Select type of training</mat-label>
                     <mat-select 
@@ -17,11 +17,11 @@
                     </mat-select>
                 </mat-form-field>
               } 
-              @if (isLoading) {
+              @if(isLoading$ | async) {
                 <mat-spinner></mat-spinner>
               }
             </mat-card-content>
-            @if (!isLoading) {
+            @if(!(isLoading$ | async )) {
                 <mat-card-actions fxLayoutAlign="center">
                     @if (exercises) {
                       <button type="submit" mat-button [disabled]="f.invalid">Start</button>
