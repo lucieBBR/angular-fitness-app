@@ -1,10 +1,14 @@
 import { Subject, Subscription } from "rxjs";
 import { Exercise } from "./exercise.model";
+import { Store } from "@ngrx/store";
 import { Firestore, collectionSnapshots, collection, collectionData, addDoc, doc, updateDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { inject, Injectable } from "@angular/core";
 import { UIService } from "../shared/ui.service";
+import * as UI from '../shared/ui.actions';
+import * as fromRoot from '../app.reducer';
+
 
 @Injectable({
     providedIn: 'root',
@@ -17,10 +21,14 @@ export class TrainingService {
     private availableExercises: Exercise[] = []
     private runningExercise: Exercise;
     private fbSubs: Subscription[] = [];
-    constructor (private uiService: UIService) {};
+    constructor (
+        private uiService: UIService,
+        private store: Store<fromRoot.State>
+    ) {};
 
     fetchAvailableExercises() {
-        this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch(new UI.StartLoading());
+        //this.uiService.loadingStateChanged.next(true);
         const exerciseCollection = collection(this.firestore, 'availableExercises');
         this.fbSubs.push(collectionSnapshots(exerciseCollection).pipe(
           map(docArray => docArray.map(doc => {
@@ -33,12 +41,14 @@ export class TrainingService {
               } as Exercise;
           }))
         ).subscribe((exercises: Exercise[]) => {
-            this.uiService.loadingStateChanged.next(false);
+            //this.uiService.loadingStateChanged.next(false);
+            this.store.dispatch(new UI.StopLoading());
             this.availableExercises = exercises;
             console.log('available exercises', this.availableExercises);
             this.exercisesChanged.next([...this.availableExercises]);
         }, error => {
-            this.uiService.loadingStateChanged.next(false);
+            //this.uiService.loadingStateChanged.next(false);
+            this.store.dispatch(new UI.StopLoading());
             this.uiService.showSnackbar('Fetching exercises failed, please try again later.', null, 3000)
             this.exerciseChanged.next(null);
         }
