@@ -4,6 +4,8 @@ import { SignupComponent } from './auth/signup/signup.component';
 import { LoginComponent } from './auth/login/login.component';
 import { TrainingComponent } from './training/training.component';
 import { AuthGuard } from './auth/auth.guard';
+import { provideState } from '@ngrx/store';
+import { trainingReducer } from './training/training.reducer';
 //import { HomeComponent } from './home.component';
 //import { ProductsComponent } from './products.component';
 
@@ -18,6 +20,10 @@ export const routes: Routes = [
   //  canActivate: [AuthGuard],
     canLoad: [AuthGuard],
     loadComponent: () => import('./training/training.component').then(m => m.TrainingComponent),
+    providers: [
+      // Lazy load the training feature state
+      provideState('training', trainingReducer),
+    ],
     children: [
       {
         path: 'past', 
