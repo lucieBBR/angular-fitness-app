@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { UIService } from 'src/app/shared/ui.service';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../../app.reducer';
+import * as fromTraining from '../training.reducer';
 
 @Component({
   selector: 'app-new-training',
@@ -17,7 +18,7 @@ import * as fromRoot from '../../app.reducer';
   styleUrl: './new-training.component.css'
 })
 export class NewTrainingComponent implements OnInit {
-  exercises: Exercise[];
+  exercises$: Observable<Exercise[]>;
   private exerciseSubscription: Subscription;
   isLoading$: Observable<boolean>;
   private loadingSubs: Subscription;
@@ -33,8 +34,9 @@ export class NewTrainingComponent implements OnInit {
     // this.loadingSubs = this.uiService.loadingStateChanged.subscribe(isLoading => {
     //   this.isLoading = isLoading;
     // });
-    this.exerciseSubscription = this.trainingService.exercisesChanged.subscribe(exercises =>
-      this.exercises = exercises);
+    // this.exerciseSubscription = this.trainingService.exercisesChanged.subscribe(exercises =>
+    //   this.exercises = exercises);
+    this.exercises$ = this.store.select(fromTraining.getAvailableExercises);
     this.fetchExercises();
   }
 
