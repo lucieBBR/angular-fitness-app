@@ -1,8 +1,7 @@
-import { Subject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { Exercise } from "./exercise.model";
 import { Store } from "@ngrx/store";
-import { Firestore, collectionSnapshots, collection, collectionData, addDoc, doc, updateDoc } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Firestore, collectionSnapshots, collection, collectionData, addDoc } from '@angular/fire/firestore';
 import { map, take } from 'rxjs/operators';
 import { inject, Injectable } from "@angular/core";
 import { UIService } from "../shared/ui.service";
@@ -15,21 +14,16 @@ import * as fromTraining from './training.reducer';
     providedIn: 'root',
   })
 export class TrainingService {
-    exerciseChanged = new Subject<Exercise>();
-    exercisesChanged = new Subject<Exercise[]>();
-    finishedExercisesChanged = new Subject<Exercise[]>();
-    firestore: Firestore = inject(Firestore);
-    private availableExercises: Exercise[] = []
-    private runningExercise: Exercise;
     private fbSubs: Subscription[] = [];
+
     constructor (
+        private firestore: Firestore = inject(Firestore),
         private uiService: UIService,
         private store: Store<fromTraining.State>
     ) {};
 
     fetchAvailableExercises() {
         this.store.dispatch(new UI.StartLoading());
-        //this.uiService.loadingStateChanged.next(true);
         const exerciseCollection = collection(this.firestore, 'availableExercises');
         this.fbSubs.push(collectionSnapshots(exerciseCollection).pipe(
           map(docArray => docArray.map(doc => {
@@ -42,27 +36,16 @@ export class TrainingService {
               } as Exercise;
           }))
         ).subscribe((exercises: Exercise[]) => {
-            //this.uiService.loadingStateChanged.next(false);
             this.store.dispatch(new UI.StopLoading());
             this.store.dispatch(new Training.SetAvailableTrainings(exercises));
-            // this.availableExercises = exercises;
-            // console.log('available exercises', this.availableExercises);
-            // this.exercisesChanged.next([...this.availableExercises]);
         }, error => {
-            //this.uiService.loadingStateChanged.next(false);
             this.store.dispatch(new UI.StopLoading());
             this.uiService.showSnackbar('Fetching exercises failed, please try again later.', null, 3000)
-            this.exerciseChanged.next(null);
         }
         ));
     }
 
     startExercise(selectedId: string) {
-        // const exerciseDocRef = doc(this.firestore, 'availableExercises', selectedId);
-        // updateDoc(exerciseDocRef, { lastSelected: new Date() })
-        // this.runningExercise = this.availableExercises.find(ex => ex.id === selectedId);
-        // console.log('running exercise', this.runningExercise)
-        // this.exerciseChanged.next({...this.runningExercise})
         this.store.dispatch(new Training.StartTraining(selectedId));
     }
 
@@ -73,8 +56,6 @@ export class TrainingService {
                 date: new Date(),
                 state: 'completed'
             });
-            // this.runningExercise = null;
-            // this.exerciseChanged.next(null);
             this.store.dispatch(new Training.StopTraining());   
         });
     }
@@ -88,22 +69,15 @@ export class TrainingService {
                 date: new Date(),
                 state: 'cancelled'
             });
-            // this.runningExercise = null;
-            // this.exerciseChanged.next(null);
             this.store.dispatch(new Training.StopTraining());
         });
     }
-
-    // getRunningExercise() {
-    //     return {...this.runningExercise};
-    // }
 
     fetchCompletedOrCancelledExercises() {
         const finishedExercises = collection(this.firestore, 'finishedExercises')
         this.fbSubs.push(
             collectionData(finishedExercises).subscribe((exercises: Exercise[]) => {
             this.store.dispatch(new Training.SetFinishedTrainings(exercises));    
-            //this.finishedExercisesChanged.next(exercises);
             })
         )
     }

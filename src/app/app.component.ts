@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from './material.module';
 import { HeaderComponent } from "./navigation/header/header.component";
@@ -22,7 +22,5 @@ export class AppComponent implements OnInit{
   ngOnInit() {
     this.authService.initAuthListener();
   }
-
- // @ViewChild('sidenav')
 
 }

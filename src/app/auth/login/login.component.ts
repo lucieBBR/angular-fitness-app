@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../material.module';
 import { FormGroup, FormControl, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
@@ -7,7 +7,6 @@ import { UIService } from 'src/app/shared/ui.service';
 import { Subscription, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../../app.reducer';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -32,10 +31,6 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading$ = this.store.select(fromRoot.getIsLoading)
-    //this.store.subscribe(data => console.log(data));
-    // this.loadingSubs = this.uiService.loadingStateChanged.subscribe(isLoading => {
-    //   this.isLoading = isLoading;
-    // })
   }
 
   onSubmit() {
@@ -52,9 +47,5 @@ export class LoginComponent implements OnInit {
   get password() {
     return this.loginForm.get('password');
   }
-
-  // ngOnDestroy() {
-  //   this.loadingSubs?.unsubscribe()
-  // }
 
 }
